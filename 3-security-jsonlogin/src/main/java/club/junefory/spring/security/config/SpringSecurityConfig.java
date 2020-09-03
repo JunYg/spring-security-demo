@@ -78,11 +78,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return jsonAuthenticationFilter;
     }
 
-    @Override
-    public void configure(WebSecurity webSecurity) {
-        webSecurity.ignoring().antMatchers("/js/**", "/css/**", "/images/**");
-    }
-
     /**
      * 配置角色拥有的资源权限
      * 支持3中URL 过滤机制
@@ -99,12 +94,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // JSON 登录
                 .addFilterAt(jsonAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                // 表单登录
-                /* .formLogin()
-                 .loginProcessingUrl("/doLogin")
-                 .successHandler(this.loginAuthenticationSuccessHandler())
-                 .failureHandler(this.loginAuthenticationFailureHandler())
-                 .and()*/
                 // 未认证请求处理
                 .exceptionHandling()
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
