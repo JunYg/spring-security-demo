@@ -1,0 +1,14 @@
+*.class
+
+# Package Files #
+*.war
+*.ear
+*.iml
+.idea
+
+/logs/
+/.settings/
+/.externalToolBuilders/
+target
+/qyyc-web/src/test/java/com/diditech/qyyc/zqb/VehicleServiceTest.java
+/qyyc-web/src/test/java/com/diditech/qyyc/zqb/VehicleMonitorServiceTest.java
