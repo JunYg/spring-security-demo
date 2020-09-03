@@ -1,6 +1,5 @@
 package club.junefory.spring.security.config;
 
-import club.junefory.spring.security.security.JsonAuthenticationFilter;
 import club.junefory.spring.security.security.LoginAuthenticationFailureHandler;
 import club.junefory.spring.security.security.LoginAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -63,21 +61,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return new LoginAuthenticationFailureHandler();
     }
 
-    /**
-     * 设置密码解密方式
-     *
-     * @return
-     */
-    @Bean
-    public JsonAuthenticationFilter jsonAuthenticationFilter() throws Exception {
-        JsonAuthenticationFilter jsonAuthenticationFilter = new JsonAuthenticationFilter();
-        jsonAuthenticationFilter.setAuthenticationManager(super.authenticationManagerBean());
-        jsonAuthenticationFilter.setFilterProcessesUrl("/doLogin-json");
-        jsonAuthenticationFilter.setAuthenticationSuccessHandler(loginAuthenticationSuccessHandler());
-        jsonAuthenticationFilter.setAuthenticationFailureHandler(loginAuthenticationFailureHandler());
-        return jsonAuthenticationFilter;
-    }
-
     @Override
     public void configure(WebSecurity webSecurity) {
         webSecurity.ignoring().antMatchers("/js/**", "/css/**", "/images/**");
@@ -97,14 +80,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .authorizeRequests().anyRequest().authenticated()
                 .and()
-                // JSON 登录
-                .addFilterAt(jsonAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // 表单登录
-                /* .formLogin()
-                 .loginProcessingUrl("/doLogin")
-                 .successHandler(this.loginAuthenticationSuccessHandler())
-                 .failureHandler(this.loginAuthenticationFailureHandler())
-                 .and()*/
+                .formLogin()
+                .loginProcessingUrl("/doLogin")
+                .successHandler(this.loginAuthenticationSuccessHandler())
+                .failureHandler(this.loginAuthenticationFailureHandler())
+                .and()
                 // 未认证请求处理
                 .exceptionHandling()
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
@@ -125,9 +106,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         response.getWriter().close();
                     }
                 })
-/*
-                .and()
-                .userDetailsService()*/
                 .and()
                 .csrf().disable();
     }
