@@ -13,6 +13,7 @@
         <module>2-security-formlogin</module>
         <module>3-security-jsonlogin</module>
         <module>4-security-authorize</module>
+        <module>5-security-dbstore</module>
     </modules>
 
     <properties>
