@@ -3,13 +3,18 @@ package club.junefory.spring.security.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -78,6 +83,30 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
+     * 配置用户信息管理器
+     *
+     * @return
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
+        userDetailsManager.createUser(User.withUsername("root").password("root").roles("admin").build());
+        return userDetailsManager;
+    }
+
+    /**
+     * 配置角色层次
+     *
+     * @return
+     */
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_admin > ROLE_user");
+        return roleHierarchy;
+    }
+
+    /**
      * 配置角色拥有的资源权限
      * 支持3中URL 过滤机制
      * 1. ANT **
@@ -89,7 +118,16 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .authorizeRequests().anyRequest().authenticated()
+                .authorizeRequests()
+                // 认证顺序，先定义的优先生效
+                // 1. 规则匹配
+                .antMatchers("/common/**").hasAnyRole("admin", "user")
+                .antMatchers("/admin/**").hasRole("admin")
+                .antMatchers("/user/**").hasRole("user")
+                // 2. 匿名
+                .antMatchers("/hello").anonymous()
+                // 3. 其他请求
+                .anyRequest().authenticated()
                 .and()
                 // JSON 登录
                 .addFilterAt(jsonAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -128,9 +166,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("user").password("123").roles("admin").authorities("role_user")
+        super.configure(auth);
+/*        auth.inMemoryAuthentication()
+                .withUser("user").password("123").roles("admin").authorities("ROLE_user", "ROLE_admin")
                 .accountExpired(false).credentialsExpired(false).accountLocked(false).disabled(false)
-                .and();
+                .and();*/
     }
 }
