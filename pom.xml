@@ -9,15 +9,16 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>3-security-jsonlogin</module>
-        <module>2-security-formlogin</module>
         <module>1-security-mvc</module>
+        <module>2-security-formlogin</module>
+        <module>3-security-jsonlogin</module>
+        <module>4-security-authorize</module>
     </modules>
 
     <properties>
         <spring-boot.version>2.1.11.RELEASE</spring-boot.version>
         <spring.security>2.1.6.RELEASE</spring.security>
-        <spring-security.version>5.4.0-RC1</spring-security.version>
+        <spring.security.version>5.4.0-RC1</spring.security.version>
     </properties>
     <!--
         <dependencies>
