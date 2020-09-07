@@ -3,6 +3,7 @@ package club.junefory.spring.security.config;
 import club.junefory.spring.security.security.JsonAuthenticationFilter;
 import club.junefory.spring.security.security.LoginAuthenticationFailureHandler;
 import club.junefory.spring.security.security.LoginAuthenticationSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -14,10 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -27,6 +30,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 
 /**
@@ -81,7 +85,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         jsonAuthenticationFilter.setAuthenticationFailureHandler(loginAuthenticationFailureHandler());
         return jsonAuthenticationFilter;
     }
-
+    @Autowired
+    DataSource dataSource;
     /**
      * 配置用户信息管理器
      *
@@ -89,8 +94,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
-        userDetailsManager.createUser(User.withUsername("root").password("root").roles("admin").build());
+        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager();
+        userDetailsManager.setDataSource(dataSource);
+        boolean admin = userDetailsManager.userExists("admin");
+        if (!admin) {
+            userDetailsManager.createUser(User.withUsername("admin").password("admin").authorities("ROLE_admin").build());
+        }
         return userDetailsManager;
     }
 
