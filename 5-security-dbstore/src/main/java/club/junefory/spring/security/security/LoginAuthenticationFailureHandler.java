@@ -1,4 +1,4 @@
-package security.security;
+package club.junefory.spring.security.security;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;

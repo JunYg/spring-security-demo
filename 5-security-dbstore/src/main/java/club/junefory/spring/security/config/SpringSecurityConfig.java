@@ -1,5 +1,8 @@
-package security.config;
+package club.junefory.spring.security.config;
 
+import club.junefory.spring.security.security.JsonAuthenticationFilter;
+import club.junefory.spring.security.security.LoginAuthenticationFailureHandler;
+import club.junefory.spring.security.security.LoginAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -20,9 +23,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import security.security.JsonAuthenticationFilter;
-import security.security.LoginAuthenticationFailureHandler;
-import security.security.LoginAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
