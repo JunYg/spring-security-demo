@@ -1,7 +1,8 @@
 # Spring Security
 
+- `FilterOrderRegistration`
 - `FilterChainProxy`
-- 
+- `SecurityFilterChain`
 - `WebSecurityConfigurerAdapter`
 - `SecurityBuilder`，建造器
   - `AuthenticationManagerBuilder`，验证管理器
